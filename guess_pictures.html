@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Угадай учителя!</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<style>
+
+body
+    {
+        background-image: url("backgrounds/227986-abstract-triangle.jpg");
+        margin:0px;
+        #background-size: cover;
+    }
+.my_button
+    {
+      color:black;
+        width: 250px;
+      font-size: 30px;
+    height: 48px;
+    }
+
+.my_image
+    {
+        
+        width: 300px;
+        border-radius: 10px;
+        border-color:aquamarine;
+    } 
+
+#image-container
+{
+    
+}
+    
+.main
+{
+  max-width: 600px;            
+ 
+ position: absolute;
+ top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;    
+background: rgb(2,0,36);
+background: linear-gradient(90deg, rgba(2,0,36,0) 0%, rgba(7,7,128,0) 35%, rgba(0,212,255,0) 100%);    padding: 10px;
+}
+    
+#buttons-container
+{
+    #background: rgb(255,255,255);
+  background: rgb(138,138,147);
+background: linear-gradient(90deg, rgba(138,138,147,0.8211659663865546) 0%, rgba(201,201,214,0.6979166666666667) 35%, rgba(204,208,209,0.7455357142857143) 100%);
+    padding: 20px;
+}
+    
+    
+</style>
+<body>
+    <div class='main'>
+    <h1>Угадай персонажа из "Игры престолов"</h1>
+    <h2 id="count_pictures"></h2>
+    <h2><span id='score'>0</span> из <span id='attempts'>0</span> попыток</h2>
+    <div id="image-container" >
+        <!-- Контейнер для отображения случайной картинки -->
+    </div>
+
+    <div id="buttons-container">
+        <!-- Контейнер для кнопок с именами картинок -->
+    </div>
+        <br>
+    <footer>Разработал: Иванов И.И.<br>2024 г</footer>
+    
+    <audio id="tada-sound">
+        <source src="sounds/line_open.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="wrong-sound">
+        <source src="sounds/100-k-1-wrong-answer.mp3" type="audio/mpeg">
+    </audio>
+</div>
+    <script>
+        // Массив с именами картинок
+        var images = ["arya","bran","brienna","dany","drogo","harry","hodor","jendry","joffrey","jon","loras","margaery","mel",
+"ned","oberyn","ramsey","renly","robb","sam","sansa","theon","tormund","tyrion"];
+        //Перемешиваем массив картинок
+        images.sort(function() { return 0.5 - Math.random() });
+		
+        score=0;
+        attemps=0;
+        document.getElementById("count_pictures").innerHTML="Картинок:"+images.length;
+        // Функция для выбора случайной картинки
+        function getRandomImage() 
+		{
+            //Теперь можно брать первую картинку как случайную
+            var randomIndex=0;
+            //var randomIndex = Math.floor(Math.random() * images.length);
+            return images[randomIndex];
+        }
+
+        function getCorrectImage() 
+		{
+            return images[randomIndex++];
+        }
+
+        // Функция для создания кнопок
+        function createButtons() {
+
+            var correctImage = getRandomImage(); // Случайная картинка
+            var buttons = [];
+            console.log(images)
+			buttons.push('<button data-correct="true" class="my_button">' + correctImage + '</button>')
+			var fi=images.shift();//выталкиваем первую картинку, чтобы она второй раз не попала в выбор
+            
+            console.log(images)
+            var imageContainer = $("#image-container");
+            imageContainer.empty();
+            var image = $("<img class='my_image'>").attr("src", correctImage+'.jpg');			
+            imageContainer.append(image);
+            // Создание кнопок с именами картинок
+            for (var i = 0; i < 3; i++) {
+               var randomImage = images[i];
+                buttons.push('<button class="my_button">' + randomImage + '</button>');
+
+            }
+            // Перемешиваем массив с кнопками
+            buttons.sort(function() { return 0.5 - Math.random() });
+            console.log(buttons);
+            images.push(fi);//вставляем правильную картинку в конец массива       
+            console.log(images)
+            // Добавляем кнопки в контейнер
+            $('#buttons-container').html(buttons.join(''));
+
+            // Добавляем обработчики событий для кнопок
+            $('button').click(function() {
+			    //alert($(this).attr('data-correct'))
+                attemps++;
+                document.getElementById('attempts').innerHTML=attemps;
+                if ($(this).attr('data-correct')) {
+                    //alert('Правильно!');
+                    score++;
+                    document.getElementById('score').innerHTML=score;
+                    $('#tada-sound')[0].play();
+                    // Здесь можно добавить код для увеличения баллов пользователя
+                } else {
+                    //alert('Не правильно!');
+                    $('#wrong-sound')[0].play();
+                }
+
+                // Создаем новый набор кнопок после нажатия на текущую кнопку
+                createButtons();
+            });
+        }
+
+        // Инициализация игры при загрузке страницы
+        $(document).ready(function() {
+            createButtons();
+        });
+    </script>
+</body>
+</html>
